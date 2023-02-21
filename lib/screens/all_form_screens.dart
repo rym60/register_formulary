@@ -1,6 +1,12 @@
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:formulario_de_registro/api_conection/api_conecion.dart';
+import 'package:formulario_de_registro/models/promo.dart';
+
+import 'package:http/http.dart' as http;
 
 class MobileScreen extends StatefulWidget {
   MobileScreen({Key? key}) : super(key: key);
@@ -12,17 +18,96 @@ class MobileScreen extends StatefulWidget {
 class _MobileScreenState extends State<MobileScreen> {
   String? fecha;
   Object? myActivity;
+final now = DateTime.now();
 
-  final fechacontroloer = TextEditingController();
+  final segurocontroller = TextEditingController();
+  final pronombreperscontroller = TextEditingController();
+  final pronombreasocontroller = TextEditingController();
+  final prodiciplinacontroller = TextEditingController();
+  final procategoriacontroller = TextEditingController();
+  final prodireccioncontroller = TextEditingController();
+  final protelefonocontroller = TextEditingController();
+  final proemailcontroller = TextEditingController();
+  final procurpcontroller = TextEditingController();
+  final procontactoemercontroller = TextEditingController();
+  final protelefonoemercontroller = TextEditingController();
+  final prosangrecontroller = TextEditingController();
+  final propopularcontroller = TextEditingController();
+  final proasociadacontroller = TextEditingController();
+  final propresicontroller = TextEditingController();
+  final protelefonopresicontroller = TextEditingController();
+  final prosecrecontroller = TextEditingController();
+  final protelefonosecrecontroller = TextEditingController();
+  final proubicacioncontroller = TextEditingController();
+  final prodomiciliocontroller = TextEditingController();
+  final prodiasactcontroller = TextEditingController();
+  final prohorascontroller = TextEditingController();
+  final procargocontroller = TextEditingController();
+  final protesocontroller = TextEditingController();
+  final protelefonotesocontroller = TextEditingController();
+  final procodpostalcontroller = TextEditingController();
+
+  late int protelefono = int.parse(protelefonocontroller.text);
+  late int protelefonoemer = int.parse(protelefonoemercontroller.text);
+  late int protelefonopresi = int.parse(protelefonopresicontroller.text);
+  late int protelefonosecre = int.parse(protelefonosecrecontroller.text);
+  late int prohoras = int.parse(prohorascontroller.text);
+  late int protelefonoteso = int.parse(protelefonotesocontroller.text);
+  late int procodpostal = int.parse(procodpostalcontroller.text);
+
+  saverecord() async
+  {
+      try {
+        var res = await http.post(
+          Uri.parse(API.save),
+          body: { 
+            'fecha': now.toString(), 
+            'seguro': segurocontroller.text, 
+            'nombrepers': pronombreperscontroller.text, 
+            'nombreaso': pronombreasocontroller.text, 
+            'diciplina': prodiciplinacontroller.text, 
+            'categoria': procategoriacontroller.text, 
+            'direccion': prodireccioncontroller.text, 
+            'telefono': protelefonocontroller.text, 
+            'email': proemailcontroller.text, 
+            'curp': procurpcontroller.text, 
+            'contactoemer': procontactoemercontroller.text, 
+            'telefonoemer': protelefonoemercontroller.text, 
+            'sangre': prosangrecontroller.text, 
+            'popular': propopularcontroller.text, 
+            'asociada': proasociadacontroller.text, 
+            'presi': propresicontroller.text, 
+            'telefonopresi': protelefonopresicontroller.text, 
+            'secre': prosecrecontroller.text, 
+            'telefonosecre': protelefonosecrecontroller.text, 
+            'ubicacion': proubicacioncontroller.text, 
+            'domicilio': prodomiciliocontroller.text, 
+            'diasact': prodiasactcontroller.text, 
+            'hora': prohorascontroller.text, 
+            'cargo': procargocontroller.text, 
+            'teso': protesocontroller.text, 
+            'telefonoteso': protelefonotesocontroller.text, 
+            'codpostal': procodpostalcontroller.text
+          },
+        );
+
+        if(res.statusCode == 200){
+          var resBodyOfSave = jsonDecode(res.body);
+          if(resBodyOfSave['success']==true){
+            Fluttertoast.showToast(msg: 'saved successfully');
+          }else{
+            Fluttertoast.showToast(msg: 'error with save');
+          }
+        }
+      } catch (e) {
+        print(e.toString());
+        Fluttertoast.showToast(msg: e.toString());
+        print(e);
+      }
+  } 
 
   final formkey = GlobalKey<FormState>();
 
-  String dropdownvalue = 'si';   
-  
-  var items = [    
-    'si',
-    'no',
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,174 +119,115 @@ class _MobileScreenState extends State<MobileScreen> {
           key: formkey ,
           child: ListView(
             children: <Widget>[
-            TextFormField(
-              controller: fechacontroloer,
-              decoration: InputDecoration(labelText: "FECHA REGISTRO(dd/mm/aa)"),
-              onSaved: (value) {
-                fecha = value;
-              },
+            TextField(
+              decoration: InputDecoration(labelText: "CUENTA CON SEGURO?"),
+              controller: segurocontroller,
             ),
-            DropdownButtonFormField(
-              decoration: InputDecoration(labelText: "cuenta con seguro"),
-              value: dropdownvalue,
-              icon: const Icon(Icons.keyboard_arrow_down),   
-              items: items.map((String items) {
-                return DropdownMenuItem(
-                  value: items,
-                  child: Text(items),
-                );
-              }).toList(),
-              onChanged: (String? newValue) { 
-                setState(() {
-                  dropdownvalue = newValue!;
-                });
-              },
-              ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "NOMBRE PROMOTOR/DEPORTISTA"),
-              onSaved: (value) {
-                
-              },
+              controller: pronombreperscontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "CARGO"),
-              onSaved: (value) {
-                
-              },
+              controller: procargocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "NOMBRE DE ASOCIACION, LIGA, CLUB, CENTRO DE FORMACION Y/O ACADEMIA"),
-              onSaved: (value) {
-                
-              },
+              controller: pronombreasocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DISCIPLINA DEPORTIVA"),
-              onSaved: (value) {
-                
-              },
+              controller: prodiciplinacontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "CATEGORIA"),
-              onSaved: (value) {
-                
-              },
+              controller: procategoriacontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DIRECCION"),
-              onSaved: (value) {
-                
-              },
+              controller: prodireccioncontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "CORREO ELECTRONICO"),
-              onSaved: (value) {
-                
-              },
+              controller: proemailcontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "CURP"),
-              onSaved: (value) {
-                
-              },
+              controller: procurpcontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "EN CASO DE EMERGENCIA NOMBRE"),
-              onSaved: (value) {
-                
-              },
+              controller: procontactoemercontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonoemercontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TIPO DE SANGRE"),
-              onSaved: (value) {
-                
-              },
+              controller: prosangrecontroller
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "POPULAR"),
-              onSaved: (value) {
-                
-              },
+              controller: propopularcontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "ASOCIADA (FEDERADO)"),
-              onSaved: (value) {
-                
-              },
+              controller: proasociadacontroller,
             ),
-            Text(""),
-            TextFormField(
+            Text("INTEGRANTES DE LA MESA DIRECTIVA DE ASOCIACIONES, CLUBS O LIGAS"),
+            TextField(
               decoration: InputDecoration(labelText: "PRESIDENTE"),
-              onSaved: (value) {
-                
-              },
+              controller: propresicontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonopresicontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "SECRETARIO"),
-              onSaved: (value) {
-                
-              },
+              controller: prosecrecontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonosecrecontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TESORERO"),
-              onSaved: (value) {
-                
-              },
+              controller: protesocontroller
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonotesocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "UNIDAD DEPORTIVA DONDE DESARROLLA LA ACTIVIDAD"),
-              onSaved: (value) {
-                
-              },
+              controller: proubicacioncontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DOMICILIO DE LA UNIDAD DEPORTIVA"),
-              onSaved: (value) {
-                
-              },
+              controller: prodomiciliocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DIAS DE ACTIVIDAD"),
-              onSaved: (value) {
-                
-              },
+              controller: prodiasactcontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "HORARIO"),
-              onSaved: (value) {
-                
-              },
+              controller: prohorascontroller,
             ),
+            TextField(
+              decoration: InputDecoration(labelText: "codigo postal"),
+              controller: procodpostalcontroller,
+            ),
+            RaisedButton(
+              onPressed: saverecord,
+              child: Text('Guardar'),
+              ),
             ]
           ),
         ),)
@@ -221,16 +247,94 @@ class _TabletScreenState extends State<TabletScreen> {
   String? fecha;
   Object? myActivity;
 
-  final fechacontroloer = TextEditingController();
+final now = DateTime.now();
 
+  final segurocontroller = TextEditingController();
+  final pronombreperscontroller = TextEditingController();
+  final pronombreasocontroller = TextEditingController();
+  final prodiciplinacontroller = TextEditingController();
+  final procategoriacontroller = TextEditingController();
+  final prodireccioncontroller = TextEditingController();
+  final protelefonocontroller = TextEditingController();
+  final proemailcontroller = TextEditingController();
+  final procurpcontroller = TextEditingController();
+  final procontactoemercontroller = TextEditingController();
+  final protelefonoemercontroller = TextEditingController();
+  final prosangrecontroller = TextEditingController();
+  final propopularcontroller = TextEditingController();
+  final proasociadacontroller = TextEditingController();
+  final propresicontroller = TextEditingController();
+  final protelefonopresicontroller = TextEditingController();
+  final prosecrecontroller = TextEditingController();
+  final protelefonosecrecontroller = TextEditingController();
+  final proubicacioncontroller = TextEditingController();
+  final prodomiciliocontroller = TextEditingController();
+  final prodiasactcontroller = TextEditingController();
+  final prohorascontroller = TextEditingController();
+  final procargocontroller = TextEditingController();
+  final protesocontroller = TextEditingController();
+  final protelefonotesocontroller = TextEditingController();
+  final procodpostalcontroller = TextEditingController();
+
+  late int protelefono = int.parse(protelefonocontroller.text);
+  late int protelefonoemer = int.parse(protelefonoemercontroller.text);
+  late int protelefonopresi = int.parse(protelefonopresicontroller.text);
+  late int protelefonosecre = int.parse(protelefonosecrecontroller.text);
+  late int prohoras = int.parse(prohorascontroller.text);
+  late int protelefonoteso = int.parse(protelefonotesocontroller.text);
+  late int procodpostal = int.parse(procodpostalcontroller.text);
+
+  saverecord() async
+  {
+      try {
+        var res = await http.post(
+          Uri.parse(API.save),
+          body: { 
+            'fecha': now.toString(), 
+            'seguro': segurocontroller.text, 
+            'nombrepers': pronombreperscontroller.text, 
+            'nombreaso': pronombreasocontroller.text, 
+            'diciplina': prodiciplinacontroller.text, 
+            'categoria': procategoriacontroller.text, 
+            'direccion': prodireccioncontroller.text, 
+            'telefono': protelefonocontroller.text, 
+            'email': proemailcontroller.text, 
+            'curp': procurpcontroller.text, 
+            'contactoemer': procontactoemercontroller.text, 
+            'telefonoemer': protelefonoemercontroller.text, 
+            'sangre': prosangrecontroller.text, 
+            'popular': propopularcontroller.text, 
+            'asociada': proasociadacontroller.text, 
+            'presi': propresicontroller.text, 
+            'telefonopresi': protelefonopresicontroller.text, 
+            'secre': prosecrecontroller.text, 
+            'telefonosecre': protelefonosecrecontroller.text, 
+            'ubicacion': proubicacioncontroller.text, 
+            'domicilio': prodomiciliocontroller.text, 
+            'diasact': prodiasactcontroller.text, 
+            'hora': prohorascontroller.text, 
+            'cargo': procargocontroller.text, 
+            'teso': protesocontroller.text, 
+            'telefonoteso': protelefonotesocontroller.text, 
+            'codpostal': procodpostalcontroller.text
+          },
+        );
+
+        if(res.statusCode == 200){
+          var resBodyOfSave = jsonDecode(res.body);
+          if(resBodyOfSave['success']==true){
+            Fluttertoast.showToast(msg: 'saved successfully');
+          }else{
+            Fluttertoast.showToast(msg: 'error no se pudo');
+          }
+        }
+      } catch (e) {
+        print(e.toString());
+        Fluttertoast.showToast(msg: e.toString());
+        print(e);
+      }
+  }
   final formkey = GlobalKey<FormState>();
-
-  String dropdownvalue = 'si';   
-  
-  var items = [    
-    'si',
-    'no',
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,75 +346,46 @@ class _TabletScreenState extends State<TabletScreen> {
           key: formkey ,
           child: ListView(
             children: <Widget>[
-            TextFormField(
-              controller: fechacontroloer,
-              decoration: InputDecoration(labelText: "FECHA REGISTRO(dd/mm/aa)"),
-              onSaved: (value) {
-                fecha = value;
-              },
+            TextField(
+              decoration: InputDecoration(labelText: "CUENTA CON SEGURO?"),
+              controller: segurocontroller,
             ),
-            DropdownButtonFormField(
-              decoration: InputDecoration(labelText: "cuenta con seguro"),
-              value: dropdownvalue,
-              icon: const Icon(Icons.keyboard_arrow_down),   
-              items: items.map((String items) {
-                return DropdownMenuItem(
-                  value: items,
-                  child: Text(items),
-                );
-              }).toList(),
-              onChanged: (String? newValue) { 
-                setState(() {
-                  dropdownvalue = newValue!;
-                });
-              },
-              ),
               Row(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "NOMBRE PROMOTOR/DEPORTISTA"),
-              onSaved: (value) {
-                
-              },
+              controller: pronombreperscontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "CARGO"),
-              onSaved: (value) {
-                
-              },
+              controller: procargocontroller,
             ),
                   )
                 ],
               ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "NOMBRE DE ASOCIACION, LIGA, CLUB, CENTRO DE FORMACION Y/O ACADEMIA"),
-              onSaved: (value) {
-                
-              },
+              controller: pronombreasocontroller,
             ),
             Row(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "DISCIPLINA DEPORTIVA"),
-              onSaved: (value) {
-                
-              },
+              controller: prodiciplinacontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "CATEGORIA"),
-              onSaved: (value) {
-                
-              },
+              controller: procategoriacontroller,
             ),
                   )
                 ],
@@ -319,20 +394,16 @@ class _TabletScreenState extends State<TabletScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "DIRECCION"),
-              onSaved: (value) {
-                
-              },
+              controller: prodireccioncontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonocontroller,
             ),
                   )
                 ],
@@ -341,20 +412,16 @@ class _TabletScreenState extends State<TabletScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "CORREO ELECTRONICO"),
-              onSaved: (value) {
-                
-              },
+              controller: proemailcontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "CURP"),
-              onSaved: (value) {
-                
-              },
+              controller: procurpcontroller,
             ),
                   )
                 ],
@@ -363,20 +430,16 @@ class _TabletScreenState extends State<TabletScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "EN CASO DE EMERGENCIA NOMBRE"),
-              onSaved: (value) {
-                
-              },
+              controller: procontactoemercontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonoemercontroller,
             ),
                   )
                 ],
@@ -385,29 +448,23 @@ class _TabletScreenState extends State<TabletScreen> {
                 children: [
                   Expanded(
                     flex: 3,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "TIPO DE SANGRE"),
-              onSaved: (value) {
-                
-              },
+              controller: prosangrecontroller,
             ),
                     ),
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "POPULAR"),
-              onSaved: (value) {
-                
-              },
+              controller: propopularcontroller,
             ),
                     ),
                   Expanded(
                     flex: 1,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "ASOCIADA (FEDERADO)"),
-              onSaved: (value) {
-                
-              },
+              controller: proasociadacontroller,
             ),
                     ),
                 ],
@@ -418,20 +475,16 @@ class _TabletScreenState extends State<TabletScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "PRESIDENTE"),
-              onSaved: (value) {
-                
-              },
+              controller: propresicontroller,
             ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonopresicontroller,
             ),
                 ),
               ],
@@ -440,20 +493,16 @@ class _TabletScreenState extends State<TabletScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "SECRETARIO"),
-              onSaved: (value) {
-                
-              },
+              controller: prosecrecontroller,
             ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonosecrecontroller,
             ),
                 ),
               ],
@@ -462,48 +511,44 @@ class _TabletScreenState extends State<TabletScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TESORERO"),
-              onSaved: (value) {
-                
-              },
+              controller: protesocontroller,
             ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonotesocontroller,
             ),
                 ),
               ],
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "UNIDAD DEPORTIVA DONDE DESARROLLA LA ACTIVIDAD"),
-              onSaved: (value) {
-                
-              },
+              controller: proubicacioncontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DOMICILIO DE LA UNIDAD DEPORTIVA"),
-              onSaved: (value) {
-                
-              },
+              controller: prodomiciliocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DIAS DE ACTIVIDAD"),
-              onSaved: (value) {
-                
-              },
+              controller: prodiasactcontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "HORARIO"),
-              onSaved: (value) {
-                
-              },
+              controller: prohorascontroller,
             ),
+            TextField(
+              decoration: InputDecoration(labelText: "codigo postal"),
+              controller: procodpostalcontroller,
+            ),
+            RaisedButton(
+              onPressed: saverecord,
+              child: Text('Guardar'),
+              ),
             ]
           ),
         ),)
@@ -523,16 +568,96 @@ class _DesktopScreenState extends State<DesktopScreen> {
   String? fecha;
   Object? myActivity;
 
-  final fechacontroloer = TextEditingController();
+  final now = DateTime.now();
+
+  final segurocontroller = TextEditingController();
+  final pronombreperscontroller = TextEditingController();
+  final pronombreasocontroller = TextEditingController();
+  final prodiciplinacontroller = TextEditingController();
+  final procategoriacontroller = TextEditingController();
+  final prodireccioncontroller = TextEditingController();
+  final protelefonocontroller = TextEditingController();
+  final proemailcontroller = TextEditingController();
+  final procurpcontroller = TextEditingController();
+  final procontactoemercontroller = TextEditingController();
+  final protelefonoemercontroller = TextEditingController();
+  final prosangrecontroller = TextEditingController();
+  final propopularcontroller = TextEditingController();
+  final proasociadacontroller = TextEditingController();
+  final propresicontroller = TextEditingController();
+  final protelefonopresicontroller = TextEditingController();
+  final prosecrecontroller = TextEditingController();
+  final protelefonosecrecontroller = TextEditingController();
+  final proubicacioncontroller = TextEditingController();
+  final prodomiciliocontroller = TextEditingController();
+  final prodiasactcontroller = TextEditingController();
+  final prohorascontroller = TextEditingController();
+  final procargocontroller = TextEditingController();
+  final protesocontroller = TextEditingController();
+  final protelefonotesocontroller = TextEditingController();
+  final procodpostalcontroller = TextEditingController();
+
+  late int protelefono = int.parse(protelefonocontroller.text);
+  late int protelefonoemer = int.parse(protelefonoemercontroller.text);
+  late int protelefonopresi = int.parse(protelefonopresicontroller.text);
+  late int protelefonosecre = int.parse(protelefonosecrecontroller.text);
+  late int prohoras = int.parse(prohorascontroller.text);
+  late int protelefonoteso = int.parse(protelefonotesocontroller.text);
+  late int procodpostal = int.parse(procodpostalcontroller.text);
+
+  saverecord() async
+  {
+      try {
+        var res = await http.post(
+          Uri.parse(API.save),
+          body: { 
+            'fecha': now.toString(), 
+            'seguro': segurocontroller.text, 
+            'nombrepers': pronombreperscontroller.text, 
+            'nombreaso': pronombreasocontroller.text, 
+            'diciplina': prodiciplinacontroller.text, 
+            'categoria': procategoriacontroller.text, 
+            'direccion': prodireccioncontroller.text, 
+            'telefono': protelefonocontroller.text, 
+            'email': proemailcontroller.text, 
+            'curp': procurpcontroller.text, 
+            'contactoemer': procontactoemercontroller.text, 
+            'telefonoemer': protelefonoemercontroller.text, 
+            'sangre': prosangrecontroller.text, 
+            'popular': propopularcontroller.text, 
+            'asociada': proasociadacontroller.text, 
+            'presi': propresicontroller.text, 
+            'telefonopresi': protelefonopresicontroller.text, 
+            'secre': prosecrecontroller.text, 
+            'telefonosecre': protelefonosecrecontroller.text, 
+            'ubicacion': proubicacioncontroller.text, 
+            'domicilio': prodomiciliocontroller.text, 
+            'diasact': prodiasactcontroller.text, 
+            'hora': prohorascontroller.text, 
+            'cargo': procargocontroller.text, 
+            'teso': protesocontroller.text, 
+            'telefonoteso': protelefonotesocontroller.text, 
+            'codpostal': procodpostalcontroller.text
+          },
+        );
+
+        if(res.statusCode == 200){
+          var resBodyOfSave = jsonDecode(res.body);
+          if(resBodyOfSave['success']==true){
+            Fluttertoast.showToast(msg: 'saved successfully');
+          }else{
+            Fluttertoast.showToast(msg: 'error no se pudo');
+          }
+        }
+      } catch (e) {
+        print(e.toString());
+        Fluttertoast.showToast(msg: e.toString());
+        print(e);
+      }
+  }
 
   final formkey = GlobalKey<FormState>();
 
-  String dropdownvalue = 'si';   
-  
-  var items = [    
-    'si',
-    'no',
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -544,75 +669,46 @@ class _DesktopScreenState extends State<DesktopScreen> {
           key: formkey ,
           child: ListView(
             children: <Widget>[
-            TextFormField(
-              controller: fechacontroloer,
-              decoration: InputDecoration(labelText: "FECHA REGISTRO(dd/mm/aa)"),
-              onSaved: (value) {
-                fecha = value;
-              },
+            TextField(
+              decoration: InputDecoration(labelText: "CUENTA CON SEGURO?"),
+              controller: segurocontroller,
             ),
-            DropdownButtonFormField(
-              decoration: InputDecoration(labelText: "cuenta con seguro"),
-              value: dropdownvalue,
-              icon: const Icon(Icons.keyboard_arrow_down),   
-              items: items.map((String items) {
-                return DropdownMenuItem(
-                  value: items,
-                  child: Text(items),
-                );
-              }).toList(),
-              onChanged: (String? newValue) { 
-                setState(() {
-                  dropdownvalue = newValue!;
-                });
-              },
-              ),
               Row(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "NOMBRE PROMOTOR/DEPORTISTA"),
-              onSaved: (value) {
-                
-              },
+              controller: pronombreperscontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "CARGO"),
-              onSaved: (value) {
-                
-              },
+              controller: procargocontroller,
             ),
                   )
                 ],
               ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "NOMBRE DE ASOCIACION, LIGA, CLUB, CENTRO DE FORMACION Y/O ACADEMIA"),
-              onSaved: (value) {
-                
-              },
+              controller: pronombreasocontroller,
             ),
             Row(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "DISCIPLINA DEPORTIVA"),
-              onSaved: (value) {
-                
-              },
+              controller: prodiciplinacontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "CATEGORIA"),
-              onSaved: (value) {
-                
-              },
+              controller: procategoriacontroller,
             ),
                   )
                 ],
@@ -621,20 +717,16 @@ class _DesktopScreenState extends State<DesktopScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "DIRECCION"),
-              onSaved: (value) {
-                
-              },
+              controller: prodireccioncontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonocontroller,
             ),
                   )
                 ],
@@ -643,20 +735,16 @@ class _DesktopScreenState extends State<DesktopScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "CORREO ELECTRONICO"),
-              onSaved: (value) {
-                
-              },
+              controller: proemailcontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "CURP"),
-              onSaved: (value) {
-                
-              },
+              controller: procurpcontroller,
             ),
                   )
                 ],
@@ -665,20 +753,16 @@ class _DesktopScreenState extends State<DesktopScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "EN CASO DE EMERGENCIA NOMBRE"),
-              onSaved: (value) {
-                
-              },
+              controller: procontactoemercontroller,
             ),
                     ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonoemercontroller,
             ),
                   )
                 ],
@@ -687,29 +771,23 @@ class _DesktopScreenState extends State<DesktopScreen> {
                 children: [
                   Expanded(
                     flex: 3,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "TIPO DE SANGRE"),
-              onSaved: (value) {
-                
-              },
+              controller: prosangrecontroller,
             ),
                     ),
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "POPULAR"),
-              onSaved: (value) {
-                
-              },
+              controller: propopularcontroller,
             ),
                     ),
                   Expanded(
                     flex: 1,
-                    child: TextFormField(
+                    child: TextField(
               decoration: InputDecoration(labelText: "ASOCIADA (FEDERADO)"),
-              onSaved: (value) {
-                
-              },
+              controller: proasociadacontroller,
             ),
                     ),
                 ],
@@ -720,20 +798,16 @@ class _DesktopScreenState extends State<DesktopScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "PRESIDENTE"),
-              onSaved: (value) {
-                
-              },
+              controller: propresicontroller,
             ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonopresicontroller,
             ),
                 ),
               ],
@@ -742,20 +816,16 @@ class _DesktopScreenState extends State<DesktopScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "SECRETARIO"),
-              onSaved: (value) {
-                
-              },
+              controller: prosecrecontroller,
             ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonosecrecontroller,
             ),
                 ),
               ],
@@ -764,48 +834,44 @@ class _DesktopScreenState extends State<DesktopScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TESORERO"),
-              onSaved: (value) {
-                
-              },
+              controller: protesocontroller,
             ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: TextFormField(
+                  child: TextField(
               decoration: InputDecoration(labelText: "TELEFONO"),
-              onSaved: (value) {
-                
-              },
+              controller: protelefonotesocontroller,
             ),
                 ),
               ],
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "UNIDAD DEPORTIVA DONDE DESARROLLA LA ACTIVIDAD"),
-              onSaved: (value) {
-                
-              },
+              controller: proubicacioncontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DOMICILIO DE LA UNIDAD DEPORTIVA"),
-              onSaved: (value) {
-                
-              },
+              controller: prodomiciliocontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "DIAS DE ACTIVIDAD"),
-              onSaved: (value) {
-                
-              },
+              controller: prodiasactcontroller,
             ),
-            TextFormField(
+            TextField(
               decoration: InputDecoration(labelText: "HORARIO"),
-              onSaved: (value) {
-                
-              },
+              controller: prohorascontroller,
             ),
+            TextField(
+              decoration: InputDecoration(labelText: "codigo postal"),
+              controller: procodpostalcontroller,
+            ),
+            RaisedButton(
+              onPressed: saverecord,
+              child: Text('Guardar'),
+              ),
             ]
           ),
         ),)
